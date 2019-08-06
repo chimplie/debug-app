@@ -1,0 +1,60 @@
+version: '3'
+services:
+  service-1:
+    build: .
+    image: universum/devops/debug-app:${DOCKER_TAG}
+    ports:
+      - "${SERVICE_1_PORT}:3000"
+    environment:
+      # Do not use `.env` file (important for local run)
+      - DOTENV=off
+      # Port to bind to
+      - PORT=3000
+      # Application name
+      - APP_NAME=service-1
+      # Route status request to service-2
+      - PROXY_ROUTE_SERVICE_2_STATUS=/service-2/status http://service-2:3000/ ^/service-2/status /status
+      # Connection to Redis
+      - REDIS_URL=redis://redis:6379
+      # Connection to PostgreSQL
+      - PG_URL=postgresql://postgres:@db:5432/postgres
+      # Connection to ElasticSearch
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    volumes:
+      - .:/app
+    depends_on:
+      - service-2
+      - db
+      - redis
+  service-2:
+    image: universum/devops/debug-app:${DOCKER_TAG}
+    ports:
+      - "${SERVICE_2_PORT}:3000"
+    environment:
+      # Do not use `.env` file (important for local run)
+      - DOTENV=off
+      # Port to bind to
+      - PORT=3000
+      # Application name
+      - APP_NAME=service-2
+      # Periodic HTTP request to http://service-1:3000/ping
+      - HTTP_TASK_GET_SELF_PING=5 | POST | http://service-1:3000/ping | {}
+      # Periodic call to `date` command
+      - SH_TASK_GET_DATE=5 date -R
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+  db:
+    image: "postgres:${POSTGRESQL_VERSION}"
+    ports:
+      - "${POSTGRESQL_HOST_PORT}:5432"
+  redis:
+    image: redis
+    ports:
+      - "${REDIS_HOST_PORT}:6379"
+  elasticsearch:
+    image: "elasticsearch:${ELASTICSEARCH_VERSION}"
+    ports:
+      - "${ELASTICSEARCH_HOST_PORT}:9200"

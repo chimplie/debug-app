@@ -1,0 +1,9 @@
+node_modules/
+npm-debug.log
+dist/
+dll/
+coverage/
+**/.DS_Store
+**/.idea
+build/
+.env
