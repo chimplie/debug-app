@@ -1,7 +1,9 @@
 version: '3'
 services:
   service-1:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-local
     image: universum/devops/debug-app:${DOCKER_TAG}
     ports:
       - "${SERVICE_1_PORT}:3000"

@@ -15,6 +15,7 @@ function getRamAddHandler(app_name, app_id) {
       });
     }
 
+    console.log(`[DA-LTRAM] changing junk storage size from ${heapSize()} to ${newSize}.`);
     junkSpace = Buffer.alloc(junkSpace.length + amount);
     junkSpace.fill(0);
 
@@ -44,7 +45,9 @@ function getRamFreeHandler(app_name, app_id) {
     }
 
     const newSize = (junkSpace.length - amount) > 0 ? junkSpace.length - amount : 0;
+    console.log(`[DA-LTRAM] changing junk storage size from ${heapSize()} to ${newSize}.`);
     junkSpace = Buffer.alloc(newSize);
+
     junkSpace.fill(0);
 
     return res.json({

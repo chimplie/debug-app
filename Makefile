@@ -24,7 +24,7 @@ docker-down:
 	docker-compose -f $(DIR)/docker/docker-compose.yml rm -fsv
 
 build:
-	docker build --file $(DIR)/Dockerfile --tag $(IMAGE_NAME):ci-local $(DIR)
+	docker build --no-cache --file $(DIR)/Dockerfile --tag $(IMAGE_NAME):ci-local $(DIR)
 
 docker-login:
 	@`aws ecr get-login --no-include-email`
