@@ -69,6 +69,19 @@ app.get('/status', async (req, res) => {
     });
 });
 
+app.get('/close', (req, res) => {
+  setInterval(() => {
+    server.close();
+  }, 500);
+
+  return res.json({
+    name: app_name,
+    id: app_id,
+    task: 'close',
+    status: 'ACCEPTED',
+  });
+});
+
 app.get('/exit', (req, res) => {
   setInterval(() => {
     server.close();

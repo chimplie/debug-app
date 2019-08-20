@@ -174,6 +174,12 @@ It is also possible to free reserved memory by sending `GET` request to the rout
 case the `:amount` of bytes will be freed. However, remember, that the application memory may not be freed immediately
 due to Node.js garbage collection specifics.
 
+Request Server Stop
+-------------------
+
+Just send a `GET` request to `/close` and application will stop to accept any connections in 0.5 seconds. The
+application will continue to run.  
+
 Request Application Termination
 -------------------------------
 
