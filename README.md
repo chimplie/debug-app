@@ -172,7 +172,12 @@ You can ask application to reserve certain amount of memory by sending `GET` req
 
 It is also possible to free reserved memory by sending `GET` request to the route `/load-test/ram/free/:amount`. In this
 case the `:amount` of bytes will be freed. However, remember, that the application memory may not be freed immediately
-due to Node.js garbage collection specifics. 
+due to Node.js garbage collection specifics.
+
+Request Application Termination
+-------------------------------
+
+Just send a `GET` request to `/exit` and application will be terminated in 0.5 seconds.  
 
 Development
 -----------

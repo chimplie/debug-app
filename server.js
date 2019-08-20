@@ -69,6 +69,20 @@ app.get('/status', async (req, res) => {
     });
 });
 
+app.get('/exit', (req, res) => {
+  setInterval(() => {
+    server.close();
+    process.exit();
+  }, 500);
+
+  return res.json({
+    name: app_name,
+    id: app_id,
+    task: 'exit',
+    status: 'ACCEPTED',
+  });
+});
+
 app.get('/load-test/cpu/:level', getLoadCpuHandler(app_name, app_id));
 app.get('/load-test/ram/add/:amount', getRamAddHandler(app_name, app_id));
 app.get('/load-test/ram/free/:amount', getRamFreeHandler(app_name, app_id));
@@ -76,4 +90,4 @@ app.get('/load-test/ram/free/:amount', getRamFreeHandler(app_name, app_id));
 // Server ping
 app.post('/ping', (req, res) => res.json({response: 'pong'}));
 
-app.listen(port, () => console.log(`[DA] Universum Debug App started on port=${port}.`));
+const server = app.listen(port, () => console.log(`[DA] Universum Debug App started on port=${port}.`));
