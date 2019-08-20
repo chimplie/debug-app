@@ -39,6 +39,7 @@ this will return something like:
 {
   "name": "service-1",
   "id": "f51ed131-56e7-44a3-a24b-bb21f6145f58",
+  "task": "status",
   "status": "RUNNING",
   "redis": "OK",
   "postgresql": "OK",
@@ -51,7 +52,8 @@ this will return something like:
     }
   },
   "httpTasks": {},
-  "shTasks": {}
+  "shTasks": {},
+  "heapSize": 0
 }
 ```
 
@@ -154,6 +156,23 @@ For example, the following task will run `date -R` each 5 seconds.
 ```bash
 SH_TASK_GET_DATE=5 date -R
 ```
+
+CPU Consumption Request
+-----------------------
+
+You can ask application to perform computationally hard task by sending `GET` request to the route
+`/load-test/cpu/:level`. Where `:level` defines computational complexity. The application will create a random square
+matrix of order `level` and will take its inverse.
+
+RAM Consumption Request
+-----------------------
+
+You can ask application to reserve certain amount of memory by sending `GET` request to the route
+`/load-test/ram/add/:amount`. Where `:amount` is the number of bytes to reserve.
+
+It is also possible to free reserved memory by sending `GET` request to the route `/load-test/ram/free/:amount`. In this
+case the `:amount` of bytes will be freed. However, remember, that the application memory may not be freed immediately
+due to Node.js garbage collection specifics. 
 
 Development
 -----------
