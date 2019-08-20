@@ -5,6 +5,7 @@ require('express-async-errors');
 const app = express();
 const morgan = require('morgan');
 const uuidv4 = require('uuid/v4');
+const memoryUsage = require('./memory-usage');
 
 
 // Load environment defaults from `.env` if required
@@ -28,7 +29,7 @@ const defineShTasks = require('./sh-tasks');
 
 // Route Handlers
 const getLoadCpuHandler = require('./load-test-cpu');
-const { heapSize, getRamAddHandler, getRamFreeHandler } = require('./load-test-ram');
+const { heapSize, getRamAddHandler, getRamSetHandler, getRamFreeHandler } = require('./load-test-ram');
 
 // Port to bind to
 const port = process.env.PORT || 3000;
@@ -54,19 +55,20 @@ app.get('/', function (req, res) {
 
 // Status URL
 app.get('/status', async (req, res) => {
-    return res.json({
-        name: app_name,
-        id: app_id,
-        status: 'RUNNING',
-        task: 'status',
-        redis: await checkRedis(),
-        postgresql: await checkPostgreSQL(),
-        elasticsearch: await checkElasticSearch(),
-        proxies: proxyRoutes,
-        httpTasks: httpTasks,
-        shTasks: shTasks,
-        heapSize: heapSize(),
-    });
+  return res.json({
+    name: app_name,
+    id: app_id,
+    status: 'RUNNING',
+    task: 'status',
+    redis: await checkRedis(),
+    postgresql: await checkPostgreSQL(),
+    elasticsearch: await checkElasticSearch(),
+    proxies: proxyRoutes,
+    httpTasks: httpTasks,
+    shTasks: shTasks,
+    heapSize: heapSize(),
+    memoryUsage: memoryUsage(),
+  });
 });
 
 app.get('/close', (req, res) => {
@@ -98,6 +100,7 @@ app.get('/exit', (req, res) => {
 
 app.get('/load-test/cpu/:level', getLoadCpuHandler(app_name, app_id));
 app.get('/load-test/ram/add/:amount', getRamAddHandler(app_name, app_id));
+app.get('/load-test/ram/set/:amount', getRamSetHandler(app_name, app_id));
 app.get('/load-test/ram/free/:amount', getRamFreeHandler(app_name, app_id));
 
 // Server ping

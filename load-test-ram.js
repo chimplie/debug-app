@@ -1,30 +1,41 @@
-let junkSpace = Buffer.alloc(0);;
+let junkSpace = Buffer.alloc(0);
 
 
 function getRamAddHandler(app_name, app_id) {
   return async (req, res) => {
-    const amount = parseInt(req.params.amount);
+    const param = parseInt(req.params.amount) | 0;
+    const amount = param * 1024 * 1024;
 
-    if (!amount) {
-      return res.status(400).json({
-        name: app_name,
-        id: app_id,
-        task: 'load-test/ram/add',
-        status: 'ERROR',
-        data: `Wrong parameter 'amount' value: ${req.params.amount}`,
-      });
-    }
-
-    console.log(`[DA-LTRAM] changing junk storage size from ${heapSize()} to ${newSize}.`);
+    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${junkSpace.length + amount}.`);
     junkSpace = Buffer.alloc(junkSpace.length + amount);
     junkSpace.fill(0);
 
     return res.json({
       name: app_name,
       id: app_id,
-      task: `load-test/ram/add/${amount}`,
+      task: `load-test/ram/add/${req.params.amount}`,
       status: 'Done',
-      amount: amount,
+      amount: `${param} MB`,
+      total: heapSize(),
+    });
+  };
+}
+
+function getRamSetHandler(app_name, app_id) {
+  return async (req, res) => {
+    const param = parseInt(req.params.amount) | 0;
+    const amount = param * 1024 * 1024;
+
+    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${amount}.`);
+    junkSpace = Buffer.alloc(amount);
+    junkSpace.fill(0);
+
+    return res.json({
+      name: app_name,
+      id: app_id,
+      task: `load-test/ram/add/${req.params.amount}`,
+      status: 'Done',
+      amount: `${param} MB`,
       total: heapSize(),
     });
   };
@@ -32,20 +43,11 @@ function getRamAddHandler(app_name, app_id) {
 
 function getRamFreeHandler(app_name, app_id) {
   return async (req, res) => {
-    const amount = parseInt(req.params.amount);
-
-    if (!amount) {
-      return res.status(400).json({
-        name: app_name,
-        id: app_id,
-        task: 'load-test/ram/free',
-        status: 'ERROR',
-        data: `Wrong parameter 'amount' value: ${req.params.amount}`,
-      });
-    }
-
+    const param = parseInt(req.params.amount) | 0;
+    const amount = param * 1024 * 1024;
     const newSize = (junkSpace.length - amount) > 0 ? junkSpace.length - amount : 0;
-    console.log(`[DA-LTRAM] changing junk storage size from ${heapSize()} to ${newSize}.`);
+
+    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${newSize}.`);
     junkSpace = Buffer.alloc(newSize);
 
     junkSpace.fill(0);
@@ -53,21 +55,22 @@ function getRamFreeHandler(app_name, app_id) {
     return res.json({
       name: app_name,
       id: app_id,
-      task: `load-test/ram/free/${amount}`,
+      task: `load-test/ram/free/${req.params.amount}`,
       status: 'Done',
-      amount: amount,
+      amount: `${param} MB`,
       total: heapSize(),
     });
   };
 }
 
 function heapSize() {
-  return junkSpace.length;
+  return `${Math.round(junkSpace.length / 1024 / 1024 * 100) / 100} MB`;
 }
 
 
 module.exports = {
   getRamAddHandler: getRamAddHandler,
+  getRamSetHandler: getRamSetHandler,
   getRamFreeHandler: getRamFreeHandler,
   heapSize: heapSize,
 };
