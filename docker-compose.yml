@@ -22,6 +22,8 @@ services:
       - PG_URL=postgresql://postgres:@db:5432/postgres
       # Connection to ElasticSearch
       - ELASTICSEARCH_URL=http://elasticsearch:9200
+      # Consume 500MB of RAM when started
+      - CONSUME_MEMORY=256
     volumes:
       - .:/app
     depends_on:

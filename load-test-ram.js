@@ -1,14 +1,19 @@
 let junkSpace = Buffer.alloc(0);
+consume(parseInt((process.env['CONSUME_MEMORY'])| 0) * 1024 * 1024);
 
+
+function consume(amount) {
+  console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${amount}.`);
+  junkSpace = Buffer.alloc(amount > 0 ? amount : 0);
+  junkSpace.fill(0);
+}
 
 function getRamAddHandler(app_name, app_id) {
   return async (req, res) => {
     const param = parseInt(req.params.amount) | 0;
     const amount = param * 1024 * 1024;
 
-    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${junkSpace.length + amount}.`);
-    junkSpace = Buffer.alloc(junkSpace.length + amount);
-    junkSpace.fill(0);
+    consume(junkSpace.length + amount);
 
     return res.json({
       name: app_name,
@@ -26,9 +31,7 @@ function getRamSetHandler(app_name, app_id) {
     const param = parseInt(req.params.amount) | 0;
     const amount = param * 1024 * 1024;
 
-    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${amount}.`);
-    junkSpace = Buffer.alloc(amount);
-    junkSpace.fill(0);
+    consume(amount);
 
     return res.json({
       name: app_name,
@@ -45,12 +48,8 @@ function getRamFreeHandler(app_name, app_id) {
   return async (req, res) => {
     const param = parseInt(req.params.amount) | 0;
     const amount = param * 1024 * 1024;
-    const newSize = (junkSpace.length - amount) > 0 ? junkSpace.length - amount : 0;
 
-    console.log(`[DA-LTRAM] changing junk storage size from ${junkSpace.length} to ${newSize}.`);
-    junkSpace = Buffer.alloc(newSize);
-
-    junkSpace.fill(0);
+    consume(junkSpace.length - amount);
 
     return res.json({
       name: app_name,

@@ -167,12 +167,17 @@ matrix of order `level` and will take its inverse.
 RAM Consumption Request
 -----------------------
 
+Set `CONSUME_MEMORY` environment variable to desired amount of megabytes to be consumed by application.
+
+### RAM Consumption Request
+
 You can ask application to reserve certain amount of memory by sending `GET` request to the route
-`/load-test/ram/add/:amount`. Where `:amount` is the number of bytes to reserve.
+`/load-test/ram/add/:amount`. Where `amount` is the number of megabytes to reserve. To set consumed memory exactly to
+`amount` use `/load-test/ram/set/:amount`.
 
 It is also possible to free reserved memory by sending `GET` request to the route `/load-test/ram/free/:amount`. In this
-case the `:amount` of bytes will be freed. However, remember, that the application memory may not be freed immediately
-due to Node.js garbage collection specifics.
+case the `amount` of megabytes will be freed. However, remember, that the application memory may not be freed
+immediately due to Node.js garbage collection specifics.
 
 Request Server Stop
 -------------------
